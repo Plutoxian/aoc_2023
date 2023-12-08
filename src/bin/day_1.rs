@@ -11,9 +11,15 @@ fn main() {
     let file: String = fs::read_to_string(input_file_path)
         .expect(&format!("Given file could not be opened or read"));
 
+    let total = part_one(&file);
+
+    println!("Calibration value is {}", total);
+}
+
+fn part_one(input: &str) -> u32 {
     let mut total: u32 = 0;
     
-    for line in file.lines() {
+    for line in input.lines() {
         for c in line.chars() {
             if c.is_digit(10) {
                 total += c.to_digit(10).unwrap() * 10;
@@ -27,6 +33,10 @@ fn main() {
             }
         }
     }
+    return total;
+}
 
-    println!("Calibration value is {}", total);
+fn part_two(input: &str) -> u32 {
+    // TODO
+    return 0;
 }
