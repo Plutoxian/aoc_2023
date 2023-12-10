@@ -2,6 +2,19 @@ use std::collections::HashMap;
 use std::env;
 use std::fs;
 
+/* NOTES:
+ *  finished this one on december 10, still pretty far behind.
+ *  need to finish reading the rust book, currently on chapter 10.
+ *  lots of stuff im still just winging.
+ * 
+ *  parsing the file was hell, no idea how to do it well in rust.
+ *  lots of unwraps in my code still, I think I'm supposed to avoid them.
+ * 
+ *  if I tried to optimize this further, I'd change the parsing to only get the
+ *  highest value of each color. I made it record all games in part 1 as I didn't
+ *  know part 2 yet. oh well
+ */
+
 
 struct DiceColors {
     red: u32,
@@ -22,13 +35,56 @@ fn main() {
     let file: String = fs::read_to_string(input_file_path)
         .expect(&format!("Given file could not be opened or read"));
 
-    let total = part_one(&file);
-
     println!("Part one result:");
-    println!("total game ID is {}", total);
+    println!("total game ID is {}", part_one(&file));
+
+    println!("Part two result:");
+    println!("total dice powers is {}", part_two(&file));
 }
 
 fn part_one(input: &str) -> u32 {
+    let games = parse_input_games(input);
+    
+    let mut valid_game_total = 0;
+    for (game_id, dice_values) in games {
+        let mut valid_game = true;
+        for value in dice_values {
+            if (value.red > DICE_IN_BAG.red) | (value.green > DICE_IN_BAG.green) | (value.blue > DICE_IN_BAG.blue) {
+                valid_game = false;
+            }
+        }
+        if valid_game {
+            valid_game_total += game_id;
+        }
+    }
+    
+    return valid_game_total;
+}
+
+fn part_two(input: &str) -> u32 {
+    let games = parse_input_games(input);
+    
+    let mut min_dice_power_total = 0;
+    for (_, dice_values) in games {
+        let mut min_dice = DiceColors{ red: 0, green: 0, blue: 0 };
+        for value in dice_values {
+            if min_dice.red < value.red {
+                min_dice.red = value.red;
+            }
+            if min_dice.green < value.green {
+                min_dice.green = value.green;
+            }
+            if min_dice.blue < value.blue {
+                min_dice.blue = value.blue;
+            }
+        }
+        min_dice_power_total += min_dice.red * min_dice.green * min_dice.blue;
+    }
+    
+    return min_dice_power_total;
+}
+
+fn parse_input_games(input: &str) -> HashMap<u32, Vec<DiceColors>>{
     let mut games: HashMap<u32, Vec<DiceColors>> = HashMap::new();
     for line in input.lines() {
         let mut line_iter = line.split(':');
@@ -55,19 +111,5 @@ fn part_one(input: &str) -> u32 {
         }
         games.insert(num_game, reveals);
     }
-
-    let mut valid_game_total = 0;
-    for (game_id, dice_values) in games {
-        let mut valid_game = true;
-        for value in dice_values {
-            if (value.red > DICE_IN_BAG.red) | (value.green > DICE_IN_BAG.green) | (value.blue > DICE_IN_BAG.blue) {
-                valid_game = false;
-            }
-        }
-        if valid_game {
-            valid_game_total += game_id;
-        }
-    }
-    
-    return valid_game_total;
+    return games;
 }
