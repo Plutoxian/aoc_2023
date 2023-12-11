@@ -1,6 +1,14 @@
 use std::env;
 use std::fs;
 
+/* NOTES:
+ *  finished part 1 on december 9
+ *  first rust code I've ever written, yippee
+ *  need to implement part 2 still. I know this is an application
+ *  of NFA, but I'm not confident in rust enough to do it. for the future
+ */
+
+
 fn main() {
     let input_file_path: String = match env::args().len() {
         0 | 1 => panic!("No input file path given"),
